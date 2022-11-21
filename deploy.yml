@@ -5,9 +5,13 @@
     ansible_sudo_pass: admin
   become: true
   pre_tasks:
-    - name: Install EPEL repo
-      package: name=epel-release state=present
+    - name: Install some package 
+      package: name='{{ item }}' state=present
       when: ansible_distribution == "Centos"
+      loop:
+        - epel-release
+        - wget
+        - git
     - name: download pip script
       get_url:
         url: https://bootstrap.pypa.io/pip/2.7/get-pip.py
@@ -16,10 +20,15 @@
       command: python2.7 /tmp/get-pip.py
 #      changed_when: true
   tasks:
+  - name: Copy website file template
+    template:
+      src: index.html.j2
+      dest: /home/admin/index.html
   - name: Create Apache conteneur
     docker_container:
       name: webapp
       image: httpd
         - "80:80"
-
+      volumes: 
+        - /home/admon/index.html:/usr/local/apache2/htdocs/index.html
 
