@@ -4,6 +4,8 @@
   vars:
     ansible_sudo_pass: admin
   become: true
+  vars_files:
+    - files/secrets/credentials.yml
   pre_tasks:
     - name: Install some package 
       package: name='{{ item }}' state=present
